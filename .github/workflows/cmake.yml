@@ -1,0 +1,62 @@
+name: CMake
+
+on:
+  push:
+  pull_request:
+  release:
+    types: [created]
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    name: Linux
+    runs-on: ubuntu-22.04
+
+    env:
+      CI_PROJECT_ROOT: ${{ github.workspace }}/src-${{ github.sha }}
+      CI_BUILD_ROOT: ${{ github.workspace }}
+
+    steps:
+    - name: Prepare Code
+      uses: actions/checkout@v4
+      with:
+        path: src-${{ github.sha }}
+        submodules: true
+
+    - name: "Prepare tools & dependencies"
+      shell: bash
+      run: |
+        source $CI_PROJECT_ROOT/ci/cpp.sh && ci_debug
+        ci_prepare_all
+  
+    - name: "MicroPython: Configure"
+      shell: bash
+      run: |
+        source $CI_PROJECT_ROOT/ci/cpp.sh && ci_debug
+        ci_cmake_configure
+  
+    - name: "MicroPython: Build"
+      shell: bash
+      run: |
+        source $CI_PROJECT_ROOT/ci/cpp.sh && ci_debug
+        ci_cmake_build
+        ci_cmake_package
+        echo "ENV_RELEASE_FILE=$(ls *.uf2 | cut -d. -f1)" >> $GITHUB_ENV
+
+    - name: "Artifacts: Upload .uf2"
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ env.RELEASE_FILE }}.uf2
+        path: ${{ env.CI_BUILD_ROOT }}/${{ env.RELEASE_FILE }}.uf2
+
+    - name: "Release: Upload .uf2"
+      if: github.event_name == 'release'
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          ${{ env.CI_BUILD_ROOT }}/${{ env.RELEASE_FILE }}.uf2
+          ${{ env.CI_BUILD_ROOT }}/${{ env.RELEASE_FILE }}.zip
+          ${{ env.CI_BUILD_ROOT }}/${{ env.RELEASE_FILE }}.tar.gz
