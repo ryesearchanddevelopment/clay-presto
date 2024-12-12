@@ -49,7 +49,11 @@ jobs:
         source $CI_PROJECT_ROOT/ci/cpp.sh && ci_debug
         ci_cmake_build
         ci_cmake_package
-        echo "ENV_RELEASE_FILE=$(ls *.uf2 | cut -d. -f1)" >> $GITHUB_ENV
+  
+    - name: "CMake: Post"
+      shell: bash
+      run: |
+        echo "ENV_RELEASE_FILE=$(ls ${{ env.CI_BUILD_ROOT }}/*.uf2 | cut -d. -f1)" >> $GITHUB_ENV
 
     - name: "Artifacts: Upload .uf2"
       uses: actions/upload-artifact@v4
