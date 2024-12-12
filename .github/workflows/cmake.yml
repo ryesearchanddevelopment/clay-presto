@@ -18,8 +18,26 @@ jobs:
     env:
       CI_PROJECT_ROOT: ${{ github.workspace }}/src-${{ github.sha }}
       CI_BUILD_ROOT: ${{ github.workspace }}
+      CMAKE_C_COMPILER_LAUNCHER: ccache
+      CMAKE_CXX_COMPILER_LAUNCHER: ccache
 
     steps:
+    - name: "CCache: ~/.ccache Fixup"
+      run: |
+        mkdir -p /home/runner/.ccache
+  
+    - name: "CCache: Restore saved cache"
+      uses: actions/cache@v4
+      with:
+        path: /home/runner/.ccache
+        key: ccache-${{ github.ref }}-${{ github.sha }}
+        restore-keys: |
+          ccache-${{ github.ref }}-${{ github.sha }}
+          ccache-${{ github.ref }}
+
+    - name: "CCache: Install ccache."
+      run: sudo apt update && sudo apt install ccache
+
     - name: Prepare Code
       uses: actions/checkout@v4
       with:
@@ -47,7 +65,9 @@ jobs:
       shell: bash
       run: |
         source $CI_PROJECT_ROOT/ci/cpp.sh && ci_debug
+        ccache --zero-stats || true
         ci_cmake_build
+        ccache --show-stats || true
         ci_cmake_package
   
     - name: "CMake: Post"
