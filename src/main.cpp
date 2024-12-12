@@ -61,8 +61,13 @@ int main() {
     printf("Init: OK\n");
 
     printf("Font: ...");
-    vector->set_font("/marker-high.af", 30);
-    printf("Font: OK\n");
+    if(vector->set_font("/marker-high.af", 30)) {
+      printf("Font: OK\n");
+    } else {
+      printf("Font: Fail!\n");
+    }
+
+    sleep_ms(1000);
 
     pp_mat3_t t = pp_mat3_identity();
     pp_mat3_translate(&t, 50, 50);
