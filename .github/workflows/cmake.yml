@@ -53,7 +53,8 @@ jobs:
     - name: "CMake: Post"
       shell: bash
       run: |
-        echo "RELEASE_FILE=$(ls ${{ env.CI_BUILD_ROOT }}/*.uf2 | cut -d. -f1)" >> $GITHUB_ENV
+        cd ${{ env.CI_BUILD_ROOT }}
+        echo "RELEASE_FILE=$(ls *.uf2 | cut -d. -f1)" >> $GITHUB_ENV
 
     - name: "Artifacts: Upload .uf2"
       uses: actions/upload-artifact@v4
