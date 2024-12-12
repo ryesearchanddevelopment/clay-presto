@@ -37,6 +37,7 @@ include_directories(${CMAKE_CURRENT_LIST_DIR}/uzlib/src)
 # Add your source files
 add_executable(${NAME}
     src/main.cpp # <-- Add source files here!
+    src/fileio.cpp
 )
 
 # Include required libraries
@@ -46,6 +47,7 @@ include(common/pimoroni_bus)
 include(drivers/fatfs/fatfs)
 include(drivers/sdcard/sdcard)
 include(libraries/pico_graphics/pico_graphics)
+include(libraries/pico_vector/pico_vector)
 
 # Don't forget to link the libraries you need!
 target_link_libraries(${NAME}
@@ -56,6 +58,8 @@ target_link_libraries(${NAME}
     sdcard
     fatfs
     hardware_interp
+    pico_graphics
+    pico_vector
 )
 
 # Configure the SD Card library for Presto

@@ -56,22 +56,6 @@ function ci_debug {
     log_inform "Build root: $CI_BUILD_ROOT"
 }
 
-function ci_cmake_vars {
-    BUILD_DIR="$CI_BUILD_ROOT/build"
-    PIMORONI_PICO_PATH="$CI_BUILD_ROOT/pimoroni-pico"
-    PICO_SDK_PATH="$CI_BUILD_ROOT/pico-sdk"
-    PIMORONI_PRESTO_PATH="$CI_BUILD_ROOT/presto"
-    CMAKE_INSTALL_PREFIX="$CI_BUILD_ROOT/out"
-
-    cmake -L -N $CI_PROJECT_ROOT \
-    -DPICOTOOL_FORCE_FETCH_FROM_GIT=1 \
-    -DCMAKE_BUILD_TYPE=$CI_BUILD_TYPE \
-    -DPIMORONI_PICO_PATH=$PIMORONI_PICO_PATH \
-    -DPICO_SDK_PATH=$PICO_SDK_PATH \
-    -DPIMORONI_PRESTO_PATH=$PIMORONI_PRESTO_PATH \
-    -DCMAKE_INSTALL_PREFIX=$CMAKE_INSTALL_PREFIX
-}
-
 function ci_cmake_configure {
     PIMORONI_PICO_PATH="$CI_BUILD_ROOT/pimoroni-pico"
     PICO_SDK_PATH="$CI_BUILD_ROOT/pico-sdk"
