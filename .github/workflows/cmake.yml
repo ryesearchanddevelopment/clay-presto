@@ -26,19 +26,24 @@ jobs:
         path: src-${{ github.sha }}
         submodules: true
 
+    - name: Install Arm GNU Toolchain (arm-none-eabi-gcc)
+      uses: carlosperate/arm-none-eabi-gcc-action@v1
+      with:
+        release: '13.3.Rel1'
+
     - name: "Prepare tools & dependencies"
       shell: bash
       run: |
         source $CI_PROJECT_ROOT/ci/cpp.sh && ci_debug
         ci_prepare_all
   
-    - name: "MicroPython: Configure"
+    - name: "CMake: Configure"
       shell: bash
       run: |
         source $CI_PROJECT_ROOT/ci/cpp.sh && ci_debug
         ci_cmake_configure
   
-    - name: "MicroPython: Build"
+    - name: "CMake: Build"
       shell: bash
       run: |
         source $CI_PROJECT_ROOT/ci/cpp.sh && ci_debug
@@ -52,7 +57,7 @@ jobs:
         name: ${{ env.RELEASE_FILE }}.uf2
         path: ${{ env.CI_BUILD_ROOT }}/${{ env.RELEASE_FILE }}.uf2
 
-    - name: "Release: Upload .uf2"
+    - name: "Release: Upload Files"
       if: github.event_name == 'release'
       uses: softprops/action-gh-release@v1
       with:
